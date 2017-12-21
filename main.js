@@ -35,95 +35,67 @@ require('./settings.js')(); //Includes settings file.
 let coinNames = [];
 let position = {
     liqui : {
-        USD: 500,
-        DASH: 1000,
-        EOS: 2, 
-        ETC: 2, 
-        ETH: 2 , 
-        ICN: 2 , 
-        LTC: 2 , 
-        MLN: 2 , 
-        REP: 2 , 
-        DOGE: 2 , 
-        XLM: 2 , 
-        XMR: 2 , 
-        XRP: 2 , 
-        ZEC: 2 , 
-        BTC: 2
+        DASH: 100,
+        EOS: 10, 
+        ETH: 10 , 
+        ICN: 10 , 
+        LTC: 10 , 
+        MLN: 10 ,  
+        BTC: 1
     } , 
     yobit : {
-        USD: 500,
-        DASH: 1000,
-        EOS: 2, 
-        ETC: 2, 
-        ETH: 2 , 
-        ICN: 2 , 
-        LTC: 2 , 
-        MLN: 2 , 
-        REP: 2 , 
-        DOGE: 2 , 
-        XLM: 2 , 
-        XMR: 2 , 
-        XRP: 2 , 
-        ZEC: 2 , 
-        BTC: 2
+        USD: 1000,
+        DASH: 100,
+        EOS: 10, 
+        ETH: 10 , 
+        ICOIN: 10 , 
+        LTC: 100 , 
+        MLN: 100 , 
+        REPUB: 100 , 
+        BTC: 1
     } , 
     tidex : {
-        USD: 500,
-        DASH: 1000,
-        EOS: 2, 
-        ETC: 2, 
-        ETH: 2 , 
-        ICN: 2 , 
-        LTC: 2 , 
-        MLN: 2 , 
-        REP: 2 , 
-        DOGE: 2 , 
-        XLM: 2 , 
-        XMR: 2 , 
-        XRP: 2 , 
-        ZEC: 2 , 
-        BTC: 2
+        USD: 1000,
+        DASH: 100,
+        EOS: 10, 
+        ETH: 10 , 
+        ICN: 10 , 
+        LTC: 10 , 
+        MLN: 10 , 
+        REP: 10 , 
+        BTC: 1
     } , 
     exmo : {
-        USD: 500,
-        DASH: 1000,
-        EOS: 2, 
-        ETC: 2, 
-        ETH: 2 , 
-        ICN: 2 , 
-        LTC: 2 , 
-        MLN: 2 , 
-        REP: 2 , 
-        DOGE: 2 , 
-        XLM: 2 , 
-        XMR: 2 , 
-        XRP: 2 , 
-        ZEC: 2 , 
-        BTC: 2
+        //eth dash waves ltc xrp zec doge btc usd
+        USD: 1000,
+        DASH: 10,
+        ETH: 10 , 
+        ICN: 10 , 
+        LTC: 10 , 
+        XRP: 10 , 
+        ZEC: 10 , 
+        BTC: 1
     } , 
     kraken : {
-        USD: 500,
-        DASH: 1000,
-        EOS: 2, 
-        ETC: 2, 
-        ETH: 2 , 
-        ICN: 2 , 
-        LTC: 2 , 
-        MLN: 2 , 
-        REP: 2 , 
-        DOGE: 2 , 
-        XLM: 2 , 
-        XMR: 2 , 
-        XRP: 2 , 
-        ZEC: 2 , 
-        BTC: 2
+        USD: 1000,
+        DASH: 10,
+        EOS: 10, 
+        ETC: 10, 
+        ETH: 10 , 
+        ICN: 10 , 
+        LTC: 10 , 
+        MLN: 10 , 
+        REP: 10 , 
+        DOGE: 10 , 
+        XLM: 10 , 
+        XMR: 10 , 
+        XRP: 10 , 
+        ZEC: 10 , 
+        BTC: 1
     }
 }
-io.on('connection', function (socket) {
-    socket.emit('coinsAndMarkets', [marketNames, coinNames]);
-    socket.emit('results', results);
-});
+
+let startingValue = 0.25
 
 // coin_prices is an object with data on price differences between markets. = {BTC : {market1 : 2000, market2: 4000, p : 2}, } (P for percentage difference)
 // results is a 2D array with coin name and percentage difference, sorted from low to high.
@@ -172,7 +144,6 @@ async function computePrices(data) {
                         if (coinNames.includes(coin) == false) coinNames.push(coin);
                         let arr = [];
                         for (let market in data[coin]) {
-                            console.log(market)
                             if (market !== 'volume') {                            
                                 let fees , position
                                 for (let i = 0 ; i < markets.length ; i++) {
@@ -303,86 +274,136 @@ async function computePrices(data) {
         shortPositionFee = results[0].bidMarket.fee
         longPositionFee = results[0].askMarket.fee
         let primaryCurrency = results[0].coinPair.split('_')[0]
-        let secondaryCurrency = results[0].coinPair.split('_')[1]
+        let secondaryCurrencyA = results[0].coinPair.split('_')[1]
         let sellPosition = position[bidMarket][primaryCurrency]
-        let buyPosition = position[askMarket][secondaryCurrency]
+        let buyPosition = position[askMarket][secondaryCurrencyA]
         // if ((sellPosition-parseFloat(results[0].volume)) > 0 && (buyPosition-parseFloat(results[0].volume) * parseFloat(results[0].askMarket.ask)) > 0 && initiatingTrades !== true) {
         console.log('initiating trades')
         initiatingTrades = true
         setTimeout(()=> {initiatingTrades = false}, 3000)
         //initiate transaction
-            position[bidMarket][secondaryCurrency] += parseFloat(results[0].volume) * parseFloat(results[0].bidMarket.bid) * (1 - shortPositionFee)
-            position[bidMarket][primaryCurrency] -= parseFloat(results[0].volume)
-            position[askMarket][secondaryCurrency] -= parseFloat(results[0].volume) * parseFloat(results[0].askMarket.ask)
-            position[askMarket][primaryCurrency] += parseFloat(results[0].volume)   * (1 - longPositionFee)
-            console.log('new position for ' + bidMarket + ' ' + primaryCurrency + ' ' + position[bidMarket][primaryCurrency])
-            console.log('new position for ' + bidMarket + ' ' + secondaryCurrency + ' ' + position[bidMarket][secondaryCurrency])
-            console.log('new position for ' + askMarket + ' ' + primaryCurrency + ' ' + position[askMarket][primaryCurrency])
-            console.log('new position for ' + askMarket + ' ' + secondaryCurrency + ' ' + position[askMarket][secondaryCurrency])
-            totalProfit += results[0].totalProfit
-            console.log('total profit: ' + totalProfit);
-            console.log(secondaryCurrency)
-            console.log(results[0].volume)
-            totalRequiredCash += results[0].requiredCash
-            console.log('total minimum required $$: ' + totalRequiredCash )
-        // } else {
-        //     if (initiatingTrades !== true) {
-        //         shortPositionFee = results[0].bidMarket.fee
-        //         longPositionFee = results[0].askMarket.fee
-        //         console.log('reloading a position')
-        //         if ((sellPosition-parseFloat(results[0].volume)) <= 0) {
-        //             console.log('loading short position')
-        //             initiatingTrades = true
-        //             setTimeout(()=> {initiatingTrades = false}, 3000)
-        //             let secondaryCurrencyB
-        //             if (secondaryCurrency === 'BTC') 
-        //                 secondaryCurrencyB = 'USD'
-        //             else 
-        //                 secondaryCurrencyB = 'BTC'
-        //             // if ()
-        //             let conversionCurrencies = primaryCurrency + '_' + secondaryCurrencyB
-        //             position[bidMarket][secondaryCurrencyB] -= coin_prices[conversionCurrencies][bidMarket].ask.price * coin_prices[conversionCurrencies][bidMarket].ask.volume
-        //             position[bidMarket][primaryCurrency] += coin_prices[conversionCurrencies][bidMarket].ask.volume * (1 - shortPositionFee)
-        //             console.log('new position: ' + bidMarket + ' ' + primaryCurrency + position[bidMarket][primaryCurrency] )
-        //             console.log('new position: ' + bidMarket + ' ' + secondaryCurrencyB + position[bidMarket][secondaryCurrencyB] )
-        //         }
-        //         if ((buyPosition-parseFloat(results[0].volume) * parseFloat(results[0].askMarket.ask)) <= 0 ) {
-        //             console.log('rates : ' + util.inspect(coin_prices.BTC_USD[askMarket]))
-        //             console.log('loading long position')
-        //             initiatingTrades = true
-        //             setTimeout(()=> {initiatingTrades = false}, 3000)
-        //             let secondaryCurrencyB , conversionPrice , conversionVolume
-        //             if (secondaryCurrency === 'BTC') 
-        //                 secondaryCurrencyB = 'USD'
-        //             else 
-        //                 secondaryCurrencyB = 'BTC'
-        //             let conversionCurrencies = 'BTC_USD' 
 
-        //             conversionPrice = coin_prices[conversionCurrencies][askMarket].ask.price
-        //             conversionVolume = coin_prices[conversionCurrencies][askMarket].ask.volume
-        //             console.log('new secondary currency: ' + conversionVolume * conversionPrice  * (1 - longPositionFee))
-        //             console.log('secondaryCurrencyB: ' + secondaryCurrencyB)
-        //             if (secondaryCurrencyB === 'BTC') {
-        //                 position[bidMarket][secondaryCurrencyB] -= conversionVolume
-        //                 position[bidMarket][secondaryCurrency] += conversionPrice * conversionVolume * (1 - longPositionFee)
-        //             } else {
-        //                 position[bidMarket][secondaryCurrencyB] -= conversionVolume * conversionPrice 
-        //                 position[bidMarket][secondaryCurrency] += conversionVolume * (1 - longPositionFee)
-                        
-        //             }
-        //             console.log('new position: ' + askMarket + ' ' + secondaryCurrency +  ' ' + position[bidMarket][secondaryCurrency] )
-        //             console.log('new position: ' + askMarket + ' ' + secondaryCurrencyB + ' ' + position[bidMarket][secondaryCurrencyB] )
-        //         }
-        //     }
-        // }
+        let tempBidPosPrimaryCurrency = position[bidMarket][primaryCurrency] - parseFloat(results[0].volume)
+        if ( tempBidPosPrimaryCurrency > 0 ) {
+            //do trade if greater than zero
+            console.log('initiating bid market arbitrage at book vol')
+            position[bidMarket][secondaryCurrencyA] += parseFloat(results[0].volume) * parseFloat(results[0].bidMarket.bid) * (1 - shortPositionFee)
+            position[bidMarket][primaryCurrency] -= parseFloat(results[0].volume)
+            console.log('new position for ' + bidMarket + ' ' + secondaryCurrencyA + ' ' + position[bidMarket][secondaryCurrencyA])
+            console.log('new position for ' + bidMarket + ' ' + primaryCurrency + ' ' + position[bidMarket][primaryCurrency])
+        }
+        if ( tempBidPosPrimaryCurrency <= 0 ) {
+            //trade remainder in acct
+            if (parseFloat(position[bidMarket][primaryCurrency]) !== 0 ) {
+                console.log('initiating bid market arbitrage at portfolio vol')
+                position[bidMarket][secondaryCurrencyA] += position[bidMarket][primaryCurrency] * parseFloat(results[0].bidMarket.bid) * (1 - shortPositionFee)
+                position[bidMarket][primaryCurrency] = 0 
+                console.log('new secondary currency position for ' + bidMarket + ' ' + secondaryCurrencyA + ' ' + position[bidMarket][secondaryCurrencyA])
+                console.log('new position for ' + bidMarket + ' ' + primaryCurrency + ' ' + position[bidMarket][primaryCurrency])
+            }
+            //sell secondary currency B for primary
+            if (secondaryCurrencyA === 'USD' && primaryCurrency !== 'BTC' ) {
+                let secondaryCurrencyB = 'BTC'
+                if ( position[bidMarket][secondaryCurrencyB] > 0 ) {                 
+                    console.log('reloading')
+                    let tempBidPosSecondaryCurrencyB = position[bidMarket][secondaryCurrencyB] - coin_prices[primaryCurrency + '_BTC'][bidMarket].ask.volume * coin_prices[primaryCurrency + '_BTC'][bidMarket].ask.price
+                    if (tempBidPosSecondaryCurrencyB > 0 ) {
+                        //sell at book vol
+                        console.log('reloading primary currency in bid market at book vol with btc')
+                        position[bidMarket][primaryCurrency] += coin_prices[primaryCurrency + '_BTC'][bidMarket].ask.volume * ( 1 - coin_prices[primaryCurrency + '_BTC'][bidMarket].fees.maker )
+                        position[bidMarket][secondaryCurrencyB] -= coin_prices[primaryCurrency + '_BTC'][bidMarket].ask.volume * coin_prices[primaryCurrency + '_BTC'][bidMarket].ask.price
+                        console.log('new position for ' + bidMarket + ' ' + secondaryCurrencyB + ' ' + position[bidMarket][secondaryCurrencyB])
+                        console.log('new position for ' + bidMarket + ' ' + primaryCurrency + ' ' + position[bidMarket][primaryCurrency])
+                    }
+                    if (tempBidPosSecondaryCurrencyB <= 0 ) {
+                        console.log('reloading primary currency in bid market at portfolio vol with btc')
+                        //sell at portfolio vol
+                        position[bidMarket][primaryCurrency] += position[bidMarket][secondaryCurrencyB] * (1 / coin_prices[primaryCurrency + '_BTC'][bidMarket].ask.price) * ( 1 - coin_prices[primaryCurrency + '_BTC'][bidMarket].fees.maker )
+                        position[bidMarket][secondaryCurrencyB] = 0
+                        console.log('new position for ' + bidMarket + ' ' + secondaryCurrencyB + ' ' + position[bidMarket][secondaryCurrencyB])
+                        console.log('new position for ' + bidMarket + ' ' + primaryCurrency + ' ' + position[bidMarket][primaryCurrency])
+                    }
+                }
+
+            }   
+            if (secondaryCurrencyA === 'USD' && primaryCurrency === 'BTC') {
+                
+            } 
+        }        
+        let tempAskPosSecondaryCurrency = position[askMarket][secondaryCurrencyA] - parseFloat(results[0].volume) * parseFloat(results[0].askMarket.ask) * (1 - shortPositionFee)
+        if (  tempAskPosSecondaryCurrency > 0 ) {
+            //do trade if greater than zero
+            console.log('initiating ask market arbitrage at book vol')
+            position[askMarket][primaryCurrency] += parseFloat(results[0].volume) 
+            position[askMarket][secondaryCurrencyA] -= parseFloat(results[0].volume) * parseFloat(results[0].askMarket.ask) * (1 - shortPositionFee)
+            console.log('new position for ' + askMarket + ' ' + secondaryCurrencyA + ' ' + position[askMarket][secondaryCurrencyA])
+            console.log('new position for ' + askMarket + ' ' + primaryCurrency + ' ' + position[askMarket][primaryCurrency])
+        }
+        if ( tempAskPosSecondaryCurrency <= 0 ) {
+            //trade remainder in acct
+            if (parseFloat(position[askMarket][secondaryCurrencyA]) !== 0 ) {
+                console.log('initiating ask market arbitrage at portfolio vol')
+                position[askMarket][primaryCurrency] += position[askMarket][secondaryCurrencyA]  * (1 / parseFloat(results[0].askMarket.ask)) * (1 - shortPositionFee)
+                position[askMarket][secondaryCurrencyA] = 0
+                console.log('new secondary currency position for ' + askMarket + ' ' + secondaryCurrencyA + ' ' + position[askMarket][secondaryCurrencyA])
+                console.log('new position for ' + askMarket + ' ' + primaryCurrency + ' ' + position[askMarket][primaryCurrency])
+            }
+            console.log(secondaryCurrencyA)
+            //sell secondary currency B for primary
+            if (secondaryCurrencyA === 'USD' && primaryCurrency !== 'BTC' ) {
+                let secondaryCurrencyB = 'BTC'
+                if ( position[askMarket][secondaryCurrencyB] > 0 ) {                    
+                    console.log('reloading')
+                    let tempBidPosSecondaryCurrencyB = position[askMarket][secondaryCurrencyB] - coin_prices['BTC_USD'][askMarket].bid.volume 
+                    if (tempBidPosSecondaryCurrencyB > 0 ) {
+                        //sell at book vol
+                        console.log('reloading secondary currency in ask market at book vol with BTC')
+                        position[askMarket][secondaryCurrencyA] += parseFloat(coin_prices['BTC_USD'][askMarket].bid.volume * coin_prices['BTC_USD'][askMarket].bid.price * ( 1 - coin_prices['BTC_USD'][askMarket].fees.maker ))
+                        position[askMarket][secondaryCurrencyB] -= parseFloat(coin_prices['BTC_USD'][askMarket].bid.volume)
+                        console.log('new position for ' + askMarket + ' ' + secondaryCurrencyB + ' ' + position[askMarket][secondaryCurrencyB])
+                        console.log('new position for ' + askMarket + ' ' + secondaryCurrencyA + ' ' + position[askMarket][secondaryCurrencyA])
+                    }
+                    if (tempBidPosSecondaryCurrencyB <= 0 ) {
+                        console.log('reloading secondary currency in ask market at portfolio vol with btc')
+                        //sell at portfolio vol
+                        position[askMarket][secondaryCurrencyA] += parseFloat(position[askMarket][secondaryCurrencyB] * (coin_prices['BTC_USD'][askMarket].bid.price) * ( 1 - coin_prices['BTC_USD'][askMarket].fees.maker ))
+                        position[askMarket][secondaryCurrencyB] = 0
+                        console.log('new position for ' + askMarket + ' ' + secondaryCurrencyB + ' ' + position[askMarket][secondaryCurrencyB])
+                        console.log('new position for ' + askMarket + ' ' + secondaryCurrencyA + ' ' + position[askMarket][secondaryCurrencyA])
+                    }
+                }
+            } 
+            if (secondaryCurrencyA === 'USD' && primaryCurrency === 'BTC') {
+                
+            } 
+        }
 
     } else {
         console.log('no profitable positions')
     }
 
+    let currentValue = 0
+    for (let marketPosition in position) {
+        for (let coinPosition in position[marketPosition]) {
+            if (coinPosition === 'BTC') currentValue += parseFloat(position[marketPosition][coinPosition])
+            else {
+                if (coinPosition === 'USD' && coin_prices['BTC_USD'][marketPosition] !== undefined) {
+                    currentValue += parseFloat(position[marketPosition][coinPosition]/ coin_prices['BTC_USD'][marketPosition].ask.price) 
+                } else {
+                    if (coin_prices[coinPosition + '_BTC'] !== undefined && coin_prices[coinPosition + '_BTC'][marketPosition] !== undefined && coin_prices[coinPosition + '_BTC'][marketPosition].bid !== undefined){
+                        currentValue += parseFloat(position[marketPosition][coinPosition] * coin_prices[coinPosition + '_BTC'][marketPosition].bid.price)
+                    }
+                }
+            }
+        }
 
+    }   
 
-    io.emit('results', results);
+    // NOTE : Trades sorta fail when arbitrage is btwn USD and BTC and
+    // we run out of either or when the arbitrage deltas are 
+    // Fix by adding other currencies 
+    
+    console.log('current portfolio value: ' + currentValue)
 }
 
 

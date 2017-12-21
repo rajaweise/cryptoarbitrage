@@ -293,6 +293,18 @@ let markets = [
                                     price: bidPrice, 
                                     volume: bidVolume
 
+                                }, 
+                                fees: {
+                                    maker: 0.001, 
+                                    transfer: {
+                                        DASH: 0,
+                                        EOS: 0, 
+                                        ETH: 0 , 
+                                        ICN: 0 , 
+                                        LTC: 0 , 
+                                        MLN: 0 ,  
+                                        BTC: 0
+                                    }
                                 }
                             }
                         }
@@ -351,6 +363,19 @@ let markets = [
                                     bid : {
                                         price: bidPrice , 
                                         volume : bidVolume
+                                    }, 
+                                    fees: {
+                                        maker: 0.002, 
+                                        transfer: {
+                                            DASH: 0.0005,
+                                            EOS: 0.0005, 
+                                            ETH: 0.0005 , 
+                                            ICOIN: 0.0005 , 
+                                            LTC: 0.0005 , 
+                                            MLN: 0.0005 , 
+                                            REPUB: 0.0005 , 
+                                            BTC: 0.0005
+                                        }
                                     }
                                 }
                             }
@@ -368,6 +393,9 @@ let markets = [
                                     bid : {
                                         price: bidPrice , 
                                         volume : bidVolume
+                                    }, 
+                                    fees: {
+                                        maker: 0.002
                                     }
                                 }
                             }
@@ -430,6 +458,19 @@ let markets = [
                                 bid: {
                                     price: bidPrice, 
                                     volume: bidVolume
+                                } , 
+                                fees: {
+                                    maker : 0.001, 
+                                    transfer: {
+                                        DASH: 0,
+                                        EOS: 0, 
+                                        ETH: 0 , 
+                                        ICN: 0 , 
+                                        LTC: 0 , 
+                                        MLN: 0 , 
+                                        REP: 0 , 
+                                        BTC: 0
+                                    }
                                 }
                             }
                     })
@@ -492,6 +533,18 @@ let markets = [
                                     price: bidPrice , 
                                     volume: bidVolume
 
+                                }, 
+                                fees: {
+                                    maker : 0.002,
+                                    transfer: {
+                                        DASH: 0.01,
+                                        ETH: 0.01 , 
+                                        ICN:  0, 
+                                        LTC: 0.01 , 
+                                        XRP: 0.02 , 
+                                        ZEC: 0.001 , 
+                                        BTC: 0.001
+                                    }
                                 }
                             }
                         }
@@ -577,6 +630,25 @@ let markets = [
                             bid: {
                                 price: bidPrice, 
                                 volume: bidVolume
+                            }, 
+                            fees: {
+                                maker:  0.0016, 
+                                transfer: {
+                                    DASH: 10,
+                                    EOS: 10, 
+                                    ETC: 0.005, 
+                                    ETH: 0.005 , 
+                                    ICN: 0.01 , 
+                                    LTC: 10 , 
+                                    MLN: 0.003 , 
+                                    REP: 0.01 , 
+                                    DOGE: 2 , 
+                                    XLM: 0.00002 , 
+                                    XMR: 0.05 , 
+                                    XRP: 0.02 , 
+                                    ZEC: 0.0001 , 
+                                    BTC: 0.001
+                                }
                             }
                         }
 
